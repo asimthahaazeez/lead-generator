@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { validateLeadForm, ValidationError } from '@/lib/validation';
 import { supabase } from '@/integrations/supabase/client';
+import { v4 as uuidv4 } from "uuid";
 
 export const LeadCaptureForm = () => {
   const [formData, setFormData] = useState({ name: '', email: '', industry: '' });
@@ -13,6 +14,39 @@ export const LeadCaptureForm = () => {
   const [leads, setLeads] = useState<
     Array<{ name: string; email: string; industry: string; submitted_at: string }>
   >([]);
+    const [sessionId, setSessionId] = useState<string | null>(null);
+
+    // Fetch leads by session ID from database
+    const fetchLeadsBySession = async (session_id: string) => {
+        try {
+            const { data, error } = await supabase
+                .from("leads")
+                .select("name, email, industry, submitted_at")
+                .eq("session_id", session_id)
+                .order("submitted_at", { ascending: true });
+            if (error) {
+                console.error("Error fetching leads by session:", error);
+                return;
+            }
+            if (data) {
+                setLeads(data);
+            }
+        } catch (err) {
+            console.error("Exception fetching leads by session:", err);
+        }
+    };
+
+    // On mount, get or create session ID and fetch leads
+    useEffect(() => {
+        let storedSessionId = localStorage.getItem("session_id");
+        if (!storedSessionId) {
+            storedSessionId = uuidv4();
+            localStorage.setItem("session_id", storedSessionId);
+        }
+        setSessionId(storedSessionId);
+        fetchLeadsBySession(storedSessionId);
+        setSubmitted(false);
+    }, []);
 
   useEffect(() => {
     setSubmitted(false);
@@ -25,28 +59,33 @@ export const LeadCaptureForm = () => {
     const errors = validateLeadForm(formData);
     setValidationErrors(errors);
 
-    if (errors.length === 0) {
-      // Save to database
-try {
-  const { error: emailError } = await supabase.functions.invoke('send-confirmation', {
-    body: {
-      name: formData.name,
-      email: formData.email,
-      industry: formData.industry,
-    },
-  });
+        if (errors.length === 0) {
+            if (!sessionId) {
+                console.error("Session ID is not set");
+                return;
+            }
+            // Save to database with session_id
+            try {
+                const { error: insertError } = await supabase
+                    .from("leads")
+                    .insert([
+                        {
+                            name: formData.name,
+                            email: formData.email,
+                            industry: formData.industry,
+                            session_id: sessionId,
+                        },
+                    ]);
+                if (insertError) {
+                    console.error("Error inserting lead:", insertError);
+                    return;
+                }
+            } catch (insertException) {
+                console.error("Exception inserting lead:", insertException);
+                return;
+            }
 
-  if (emailError) {
-    console.error('Error sending confirmation email:', emailError);
-  } else {
-    console.log('Confirmation email sent successfully');
-  }
-} catch (emailError) {
-  console.error('Error calling email function:', emailError);
-}
-
-      // Send confirmation email
-      try {
+        try {
         const { error: emailError } = await supabase.functions.invoke('send-confirmation', {
           body: {
             name: formData.name,
@@ -63,14 +102,9 @@ try {
       } catch (emailError) {
         console.error('Error calling email function:', emailError);
       }
+      // Fetch updated leads for this session
+      await fetchLeadsBySession(sessionId);
 
-      const lead = {
-        name: formData.name,
-        email: formData.email,
-        industry: formData.industry,
-        submitted_at: new Date().toISOString(), 
-      };
-      setLeads([...leads, lead]);
       setSubmitted(true);
       setFormData({ name: '', email: '', industry: '' });
     }
