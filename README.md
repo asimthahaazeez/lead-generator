@@ -21,11 +21,10 @@ Added logic to validate form inputs and insert lead data (name, email, industry,
 
 ```ts
 await supabase.from('leads').insert([{
-  name,
-  email,
-  industry,
-  session_id,
-  submitted_at: new Date()
+  formData.name,
+  formData.email,
+  formData.industry,
+  formData.session_id
 }]);
 ```
 
