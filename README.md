@@ -23,7 +23,9 @@ The lead capture form now saves submitted lead data directly to the Supabase dat
 
 #### 3. Fixed logical error in generatePersonalisedConetent
 - Cannot read properties of undefined (reading '1') at line 34 in supabase/functions/send-confirmation/index.ts.
-- changes: const content = data.choices[0].message?.content; from const content = data.choices[1].message?.content;
+- changes:
+<pre> <code>```ts const content = data.choices[0].message?.content; ```</code> </pre>
+<pre> <code>```ts const content = data.choices[1].message?.content; ```</code> </pre>
 
 #### 4. Implement session ID tracking in leads form
 - Generate a UUID session ID
