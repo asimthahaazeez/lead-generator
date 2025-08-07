@@ -1,73 +1,52 @@
-# Welcome to your Lovable project
+## Lead Capture Form – Supabase Integration
 
-## Project info
+The lead capture form now saves submitted lead data directly to the Supabase database. It captures the lead’s **name**, **email**, **industry**, **session_id**, and **submission timestamp**.
 
-**URL**: https://lovable.dev/projects/94b52f1d-10a5-4e88-9a9c-5c12cf45d83a
+### How It Works
 
-## How can I edit this code?
+- On form submission, input data is validated.
+- If valid, the lead data is inserted into the `leads` table in Supabase.
+- A confirmation email is sent via a Supabase Edge Function: send-confirmation.
+- The form resets and displays a success message and a queue count in the current session.
 
-There are several ways of editing your application.
+### Fixes and Code Changes
 
-**Use Lovable**
+#### 1. Saving Leads to Supabase Database
+- Added logic to insert lead data into the `leads` table in Supabase.
+- Ensures leads are properly stored on each submission.
+- Any insertion errors are logged and prevent the confirmation step.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/94b52f1d-10a5-4e88-9a9c-5c12cf45d83a) and start prompting.
+#### 2. Removed Duplicate Confirmation Email Call
+- Previously, the `send-confirmation` Edge Function was triggered twice.
+- Removed the duplicate call to avoid sending redundant emails.
+- The function now runs only once after a successful database insert.
 
-Changes made via Lovable will be committed automatically to this repo.
+#### 3. Fixed logical error in generatePersonalisedConetent
+- Cannot read properties of undefined (reading '1') at line 34 in supabase/functions/send-confirmation/index.ts.
+- changes: const content = data.choices[0].message?.content; from const content = data.choices[1].message?.content;
 
-**Use your preferred IDE**
+#### 4. Implement session ID tracking in leads form
+- Generate a UUID session ID
+- Store the session ID in localStorage for persistence.
+- Modify the lead insertion to include the session_id.
+- On component mount and after each successful submission, query the database for all leads with the current session_id and update the local leads state.
+- Update the "You're #{leads.length} in this session" message to reflect the count of leads with the current session_id from the database.
+- This will ensure the session_id is stored in the database and the count reflects the actual leads submitted in the current session.
+- Also removed storage key from client.ts (storage: localStorage)
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Supabase Setup
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+Ensure your Supabase project includes a `leads` table with the following columns:
 
-Follow these steps:
+| Column        | Type                     |
+|---------------|--------------------------|
+| `id`          | UUID or serial PRIMARY KEY |
+| `name`        | text                     |
+| `email`       | text                     |
+| `industry`    | text                     |
+| `submitted_at`| timestamp                |
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### 📌 Notes
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/94b52f1d-10a5-4e88-9a9c-5c12cf45d83a) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+- All errors during saving or email sending are logged to the browser console.
+- You can update the table name or field structure in `LeadCaptureForm.tsx` as needed.

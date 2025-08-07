@@ -85,7 +85,7 @@ export const LeadCaptureForm = () => {
                 return;
             }
 
-        try {
+      try {
         const { error: emailError } = await supabase.functions.invoke('send-confirmation', {
           body: {
             name: formData.name,
