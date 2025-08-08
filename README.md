@@ -1,8 +1,6 @@
 ## Overview
 This document outlines the major bugs that were discovered and resolved in the Lead Capture Form integration with Supabase.
 
----
-
 ## Critical Fixes Implemented
 
 ### 1. Lead Data Not Saving to Supabase
@@ -110,7 +108,7 @@ Ensure your Supabase project includes a `leads` table with the following columns
 - The confirmation email is sent via a Supabase Edge Function named `send-confirmation`.
 
 
-### Post-Cloning Setup Instructions
+## Post-Cloning Setup Instructions
 
 After cloning the repository, follow these steps to set up and verify the project:
 
