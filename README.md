@@ -41,7 +41,7 @@ The Edge Function send-confirmation was being called twice due to duplicate func
 #### Fix
 Removed the redundant call and ensured send-confirmation is triggered only after successful database insertion.
 
-### 3.Crash in Edge Function: Cannot Read Properties of Undefined
+### 3. Crash in Edge Function
 **File**: `supabase/functions/send-confirmation/index.ts`<br>
 **Severity**: High<br>
 **Status**: Fixed
@@ -59,11 +59,10 @@ Corrected code to access to safely get the first choice's content.
 const content = data.choices[0].message?.content;
 ```
 
-### 4.Implemented Session ID Tracking in Leads Form
+### 4. Implemented Session ID Tracking in Leads Form
 **File**: `LeadCaptureForm.tsx`<br>
 **Severity**: Medium<br>
 **Status**: Fixed
-
 
 #### Problem
 No session tracking for leads; the count of leads submitted during the current session was inaccurate or unavailable.
