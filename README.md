@@ -7,7 +7,9 @@ This document outlines the major bugs that were discovered and resolved in the L
 
 ### 1. Lead Data Not Saving to Supabase
 **File**: `LeadCaptureForm.tsx`
+
 **Severity**: High
+
 **Status**: Fixed
 
 #### Problem
@@ -28,9 +30,12 @@ await supabase.from('leads').insert([{
 }]);
 ```
 
+
 ### 2. Removed Duplicate Confirmation Email Call
 **File**: `LeadCaptureForm.tsx`
+
 **Severity**: Medium
+
 **Status**: Fixed
 
 #### Problem
@@ -44,7 +49,9 @@ Removed the redundant call and ensured send-confirmation is triggered only after
 
 #### 3.Crash in Edge Function: Cannot Read Properties of Undefined
 **File**: `supabase/functions/send-confirmation/index.ts`
+
 **Severity**: High
+
 **Status**: Fixed
 
 #### Problem
@@ -78,12 +85,12 @@ Session ID was not generated or persisted; leads were not queried by session.
 - Display a dynamic message showing the actual count of leads submitted during the current session, e.g., “You’re #3 in this session.”
 - Removed localStorage usage from client.ts to avoid conflicts.
 
-### Supabase Setup
-
 ### Impact
 - Accurate tracking of session-specific lead submissions
 - Better user feedback on lead queue position in current session
 - Persistent session data across page reloads
+
+## Supabase Setup
 
 Ensure your Supabase project includes a `leads` table with the following columns:
 
@@ -101,3 +108,32 @@ Ensure your Supabase project includes a `leads` table with the following columns
 - All errors during saving or email sending are logged to the browser console.
 - You can update the table name or field structure in `LeadCaptureForm.tsx` as needed.
 - The confirmation email is sent via a Supabase Edge Function named `send-confirmation`.
+
+
+### Post-Cloning Setup Instructions
+
+After cloning the repository, follow these steps to set up and verify the project:
+
+1. **Connect to a Supabase Project**
+   Link the project to your personal Supabase instance.
+
+2. **Install Supabase CLI**
+   Ensure the Supabase CLI is installed on your system.
+   [Installation Guide](https://supabase.com/docs/guides/cli)
+
+3. **Run Database Migrations**
+   Apply all pending migrations to set up the database schema.
+
+4. **Deploy Edge Function**
+   Deploy the required Edge Function(s) using the Supabase CLI.
+
+5. **Check Edge Function Logs**
+   Use the CLI or Supabase dashboard to monitor error logs for the deployed functions.
+
+6. **Fix Lead Saving Issue**
+   Initially, leads were not being saved to the database due to a bug, which has since been resolved.
+
+7. **Session Tracking for Leads**
+   Session ID was not being generated or persisted; leads were not queried by session.
+
+
