@@ -4,10 +4,8 @@ This document outlines the major bugs that were discovered and resolved in the L
 ## Critical Fixes Implemented
 
 ### 1. Lead Data Not Saving to Supabase
-**File**: `LeadCaptureForm.tsx`
-
-**Severity**: High
-
+**File**: `LeadCaptureForm.tsx`<br>
+**Severity**: High<br>
 **Status**: Fixed
 
 #### Problem
@@ -30,10 +28,8 @@ await supabase.from('leads').insert([{
 
 
 ### 2. Removed Duplicate Confirmation Email Call
-**File**: `LeadCaptureForm.tsx`
-
-**Severity**: Medium
-
+**File**: `LeadCaptureForm.tsx`<br>
+**Severity**: Medium<br>
 **Status**: Fixed
 
 #### Problem
@@ -45,11 +41,9 @@ The Edge Function send-confirmation was being called twice due to duplicate func
 #### Fix
 Removed the redundant call and ensured send-confirmation is triggered only after successful database insertion.
 
-#### 3.Crash in Edge Function: Cannot Read Properties of Undefined
-**File**: `supabase/functions/send-confirmation/index.ts`
-
-**Severity**: High
-
+### 3.Crash in Edge Function: Cannot Read Properties of Undefined
+**File**: `supabase/functions/send-confirmation/index.ts`<br>
+**Severity**: High<br>
 **Status**: Fixed
 
 #### Problem
@@ -59,16 +53,17 @@ The Edge Function crashed with Cannot read properties of undefined (reading '1')
 The Edge Function send-confirmation was being called twice due to duplicate function triggers.The code was incorrectly trying to access data.choices[1] when only one choice was returned from the API.
 
 #### Fix
-Corrected code to access `data.choices[0].message?.content` to safely get the first choice's content.
+Corrected code to access to safely get the first choice's content.
 
 ```ts
 const content = data.choices[0].message?.content;
 ```
 
-#### 4.Implemented Session ID Tracking in Leads Form
-**File**: `LeadCaptureForm.tsx`
-**Severity**: Medium
+### 4.Implemented Session ID Tracking in Leads Form
+**File**: `LeadCaptureForm.tsx`<br>
+**Severity**: Medium<br>
 **Status**: Fixed
+
 
 #### Problem
 No session tracking for leads; the count of leads submitted during the current session was inaccurate or unavailable.
@@ -134,4 +129,77 @@ After cloning the repository, follow these steps to set up and verify the projec
 7. **Session Tracking for Leads**
    Session ID was not being generated or persisted; leads were not queried by session.
 
+---
 
+# Welcome to your Lovable project
+
+## Project info
+
+**URL**: https://lovable.dev/projects/94b52f1d-10a5-4e88-9a9c-5c12cf45d83a
+
+## How can I edit this code?
+
+There are several ways of editing your application.
+
+**Use Lovable**
+
+Simply visit the [Lovable Project](https://lovable.dev/projects/94b52f1d-10a5-4e88-9a9c-5c12cf45d83a) and start prompting.
+
+Changes made via Lovable will be committed automatically to this repo.
+
+**Use your preferred IDE**
+
+If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+
+The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+
+Follow these steps:
+
+sh
+# Step 1: Clone the repository using the project's Git URL.
+git clone <YOUR_GIT_URL>
+
+# Step 2: Navigate to the project directory.
+cd <YOUR_PROJECT_NAME>
+
+# Step 3: Install the necessary dependencies.
+npm i
+
+# Step 4: Start the development server with auto-reloading and an instant preview.
+npm run dev
+
+**Edit a file directly in GitHub**
+
+Navigate to the desired file(s).
+Click the "Edit" button (pencil icon) at the top right of the file view.
+Make your changes and commit the changes.
+
+**Use GitHub Codespaces**
+
+Navigate to the main page of your repository.
+Click on the "Code" button (green button) near the top right.
+Select the "Codespaces" tab.
+Click on "New codespace" to launch a new Codespace environment.
+Edit files directly within the Codespace and commit and push your changes once you're done.
+
+## What technologies are used for this project?
+
+This project is built with:
+
+Vite
+TypeScript
+React
+shadcn-ui
+Tailwind CSS
+
+## How can I deploy this project?
+
+Simply open [Lovable](https://lovable.dev/projects/94b52f1d-10a5-4e88-9a9c-5c12cf45d83a) and click on Share -> Publish.
+
+## Can I connect a custom domain to my Lovable project?
+
+Yes, you can!
+
+To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+
+Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
